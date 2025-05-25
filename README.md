@@ -1,0 +1,1 @@
+# ltcpay_wallet_example
