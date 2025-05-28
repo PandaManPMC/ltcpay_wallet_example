@@ -103,12 +103,13 @@ func TestGetTrade(t *testing.T) {
 
 	//trade, err := GetTrade("Nano", "13DCFD2600736B0CE46E0AFFF0E537BB41357634EE12043C60D06CE5EDB1E563", "nano_1hphkwo88exyrccjmeiwjohpk1cgxi5w6gmowodxagmpiczh81bg447dutfj")
 	//trade, err := GetTrade("Nano", "13DCFD2600736B0CE46E0AFFF0E537BB41357634EE12043C60D06CE5EDB1E513", "nano_1hphkwo88exyrccjmeiwjohpk1cgxi5w6gmowodxagmpiczh81bg447dutfj")
-	trade, err := GetTrade("Nano", "FF16F6C651044FDC591C43D695986CF617FB32036FE7E312F36346D0DC5EDAD7", "nano_338yr6inx5tbg8ii6f6reffw3x7dj557xh9itsquk4z4cw6bg7zy7ichqq16")
+	code, trade, err := GetTrade("Nano", "FF16F6C651044FDC591C43D695986CF617FB32036FE7E312F36346D0DC5EDAD7", "nano_338yr6inx5tbg8ii6f6reffw3x7dj557xh9itsquk4z4cw6bg7zy7ichqq16")
 
 	//trade, err := GetTrade("Ravencoin", "9b6f315e3892ac1ccb6813852877b19931f763119b6183925c40b0d6caf225fc", "RJEbayw2FGvTBFQRGdqMPcyGDhAhKVrYNU")
 	//trade, err := GetTrade("Ravencoin", "bace2a4d86b1d67acee0dc1291779b9ef92ba9a8d64e6da9190a8cd91fa59e2c", "RJEbayw2FGvTBFQRGdqMPcyGDhAhKVrYNU")
 
 	if nil != err {
+		t.Log(code)
 		t.Fatal(err)
 	}
 	t.Log(trade)
@@ -161,8 +162,9 @@ func TestGetWithdrawInfo(t *testing.T) {
 		t.Fatal(e)
 	}
 
-	res, err := GetWithdrawInfo("SuD1Shtd3qvDp2cyunkqfHjaR8BKGZ0M")
+	//res, err := GetWithdrawInfo("SuD1Shtd3qvDp2cyunkqfHjaR8BKGZ0M")
 	//res, err := GetWithdrawInfo("1dw3zBpvOs6uZD0Ky62xgqbZ8KbIOa7R")
+	res, err := GetWithdrawInfo("1dw3zBpvOs6uZD0Ky62xgqbZ8KbIOa71")
 
 	if nil != err {
 		t.Fatal(err)

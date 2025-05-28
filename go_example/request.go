@@ -174,8 +174,8 @@ func PostChangeAddress(address, callBackUrl string) (*PostCreateAddressOut, erro
 }
 
 // GetTradeConfirm 交易链上确认数
-// code -> 2001 交易处理中
-// code -> 2000 区块信息
+// 2001 -> 交易处理中
+// 2002 -> 未在链上找到交易
 func GetTradeConfirm(tradeId string) (int, *GetTradeConfirmOut, error) {
 	in := GetTradeConfirmIn{
 		TradeId:       tradeId,
@@ -213,7 +213,7 @@ func GetTradeConfirm(tradeId string) (int, *GetTradeConfirmOut, error) {
 	}
 
 	if 2000 != res.Code {
-		return res.Code, nil, nil
+		return res.Code, nil, errors.New(fmt.Sprintf("code=%d,tip=%s", res.Code, res.Tip))
 	}
 
 	return res.Code, o, nil
@@ -223,7 +223,8 @@ func GetTradeConfirm(tradeId string) (int, *GetTradeConfirmOut, error) {
 // 查询交易，交易存在响应交易。交易不存在补充交易（从区块获得交易并回调）
 // return code 2000 -> 交易存在响应交易 []
 // return code 2001 -> 交易补充，并进行回调
-func GetTrade(netWork, transactionHash, address string) ([]GetTradeOut, error) {
+// return code 2003 -> 未在链上找到交易
+func GetTrade(netWork, transactionHash, address string) (int, []GetTradeOut, error) {
 	in := GetTradeIn{
 		TransactionHash: transactionHash,
 		NetWork:         netWork,
@@ -233,12 +234,12 @@ func GetTrade(netWork, transactionHash, address string) ([]GetTradeOut, error) {
 
 	inBuf, err := json.Marshal(in)
 	if nil != err {
-		return nil, err
+		return 0, nil, err
 	}
 
 	sign, err := util.NewRSAPemPKCS8().RsaSignWithSha256(inBuf, priKey)
 	if nil != err {
-		return nil, err
+		return 0, nil, err
 	}
 
 	sign64 := util.EncodeBase64(sign)
@@ -251,21 +252,21 @@ func GetTrade(netWork, transactionHash, address string) ([]GetTradeOut, error) {
 
 	body, err := util.GetInstanceByHttpUtil().PostClient(url, header, inBuf, 0, nil)
 	if nil != err {
-		return nil, err
+		return 0, nil, err
 	}
 
 	res := new(Result)
 	o := make([]GetTradeOut, 0)
 	res.Data = &o
 	if e := json.Unmarshal(body, res); nil != e {
-		return nil, e
+		return 0, nil, e
 	}
 
 	if 2000 != res.Code {
-		return nil, errors.New(fmt.Sprintf("code=%d,tip=%s", res.Code, res.Tip))
+		return res.Code, nil, errors.New(fmt.Sprintf("code=%d,tip=%s", res.Code, res.Tip))
 	}
 
-	return o, nil
+	return res.Code, o, nil
 }
 
 // PostWithdraw 申请提币
@@ -315,6 +316,7 @@ func PostWithdraw(tradeId, addressTo, tokenFullName, amount, memo string) (*Resu
 }
 
 // GetWithdrawInfo 查询提币状态
+// 2001 -> 未找到订单
 func GetWithdrawInfo(tradeId string) (*GetWithdrawInfoRes, error) {
 	in := GetWithdrawInfoIn{
 		TradeId:       tradeId,
@@ -352,6 +354,9 @@ func GetWithdrawInfo(tradeId string) (*GetWithdrawInfoRes, error) {
 	}
 
 	if 2000 != res.Code {
+		if 2001 == res.Code {
+			return nil, nil
+		}
 		return nil, errors.New(fmt.Sprintf("code=%d,tip=%s", res.Code, res.Tip))
 	}
 
