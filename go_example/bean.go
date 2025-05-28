@@ -13,6 +13,7 @@ type GetTokenListRes struct {
 	ContractAddress   string `json:"contractAddress"`   // 合约地址
 	AmountDecimals    uint32 `json:"amountDecimals"`    // 精度
 	MainTokenFullName string `json:"mainTokenFullName"` // 主链代币
+	MinWithdrawAmount string `json:"minWithdrawAmount"` // 最小提款金额
 }
 
 type PostCreateAddressIn struct {

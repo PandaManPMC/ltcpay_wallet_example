@@ -35,6 +35,49 @@ func GetPlatformPubKey() []byte {
 	return platformPubKey
 }
 
+func GetTokenList() ([]GetTokenListRes, error) {
+	in := GetTokenListIn{
+		CallTimestamp: time.Now().Unix(),
+	}
+
+	inBuf, err := json.Marshal(in)
+	if nil != err {
+		return nil, err
+	}
+
+	sign, err := util.NewRSAPemPKCS8().RsaSignWithSha256(inBuf, priKey)
+	if nil != err {
+		return nil, err
+	}
+
+	sign64 := util.EncodeBase64(sign)
+
+	url := fmt.Sprintf("%s/GetTokenList", priBaseUrl)
+
+	header := make(map[string]string)
+	header["Content-Type"] = "application/json"
+	header[ReqHeaderMerchantCode] = merchantCode
+	header[ReqSign] = sign64
+
+	body, err := util.GetInstanceByHttpUtil().PostClient(url, header, inBuf, 0, nil)
+	if nil != err {
+		return nil, err
+	}
+
+	res := new(Result)
+	o := make([]GetTokenListRes, 0)
+	res.Data = &o
+	if e := json.Unmarshal(body, res); nil != e {
+		return nil, e
+	}
+
+	if 2000 != res.Code {
+		return nil, errors.New(fmt.Sprintf("code=%d,tip=%s", res.Code, res.Tip))
+	}
+
+	return o, nil
+}
+
 // PostCreateAddress 生成地址
 // 地址根据不同 netWork 区分，可以用一个 netWork 的地址表示该网络下所有 token
 func PostCreateAddress(netWork, callBackUrl string) (*PostCreateAddressOut, error) {
@@ -133,7 +176,7 @@ func PostChangeAddress(address, callBackUrl string) (*PostCreateAddressOut, erro
 // GetTradeConfirm 交易链上确认数
 // code -> 2001 交易处理中
 // code -> 2000 区块信息
-func GetTradeConfirm(tradeId string) (*GetTradeConfirmOut, error) {
+func GetTradeConfirm(tradeId string) (int, *GetTradeConfirmOut, error) {
 	in := GetTradeConfirmIn{
 		TradeId:       tradeId,
 		CallTimestamp: time.Now().Unix(),
@@ -141,12 +184,12 @@ func GetTradeConfirm(tradeId string) (*GetTradeConfirmOut, error) {
 
 	inBuf, err := json.Marshal(in)
 	if nil != err {
-		return nil, err
+		return 0, nil, err
 	}
 
 	sign, err := util.NewRSAPemPKCS8().RsaSignWithSha256(inBuf, priKey)
 	if nil != err {
-		return nil, err
+		return 0, nil, err
 	}
 
 	sign64 := util.EncodeBase64(sign)
@@ -159,21 +202,21 @@ func GetTradeConfirm(tradeId string) (*GetTradeConfirmOut, error) {
 
 	body, err := util.GetInstanceByHttpUtil().PostClient(url, header, inBuf, 0, nil)
 	if nil != err {
-		return nil, err
+		return 0, nil, err
 	}
 
 	res := new(Result)
 	o := new(GetTradeConfirmOut)
 	res.Data = o
 	if e := json.Unmarshal(body, res); nil != e {
-		return nil, e
+		return 0, nil, e
 	}
 
 	if 2000 != res.Code {
-		return nil, errors.New(fmt.Sprintf("code=%d,tip=%s", res.Code, res.Tip))
+		return res.Code, nil, nil
 	}
 
-	return o, nil
+	return res.Code, o, nil
 }
 
 // GetTrade 查询/补单

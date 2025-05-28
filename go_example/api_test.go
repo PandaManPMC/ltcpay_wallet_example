@@ -15,6 +15,17 @@ const (
 	priBaseUrlG     = "https://walapi.wearelucky2025.top/a001/api"
 )
 
+func TestGetTokenList(t *testing.T) {
+	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
+		t.Fatal(e)
+	}
+	tokenList, err := GetTokenList()
+	if nil != err {
+		t.Fatal(err)
+	}
+	t.Log(tokenList)
+}
+
 func TestPostCreateAddress(t *testing.T) {
 	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
 		t.Fatal(e)
@@ -23,9 +34,11 @@ func TestPostCreateAddress(t *testing.T) {
 	netWork = "TRON"
 	netWork = "BSC"
 	netWork = "Ethereum"
-	netWork = "Solana"
 	netWork = "Nano"
 	netWork = "Ravencoin"
+	netWork = "Dogecoin"
+	netWork = "Litecoin"
+	netWork = "Solana"
 
 	address, err := PostCreateAddress(netWork, "http://92.118.228.90:19900")
 	if nil != err {
@@ -55,8 +68,9 @@ func TestGetTradeConfirm(t *testing.T) {
 
 	//res, err := GetTradeConfirm("CAbA72025052584301669")
 	//res, err := GetTradeConfirm("dFpy72025052541932302")
-	res, err := GetTradeConfirm("nioJ72025052508154677")
+	code, res, err := GetTradeConfirm("nioJ72025052508154677")
 
+	t.Log(code)
 	if nil != err {
 		t.Fatal(err)
 	}
@@ -116,9 +130,25 @@ func TestPostWithdraw(t *testing.T) {
 	//	"nano_1nk7kf11j4uhwqmry818xxhxqq9ickwrmm3xtwpzzp3ybjz75yuoeuc7chz8", "XNO-Nano",
 	//	"145000000000000000000000000000", "")
 
+	//res, err := PostWithdraw(tradeId,
+	//	"0x9b5836EdC7647C83628e12098a81B3f2b1800340", "USDT-ERC20",
+	//	"20000000", "")
+
+	//res, err := PostWithdraw(tradeId,
+	//	"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "SOL-Solana",
+	//	"10000", "") // code=2014,tip=最小转账金额 3500000
+
 	res, err := PostWithdraw(tradeId,
-		"0x9b5836EdC7647C83628e12098a81B3f2b1800340", "USDT-ERC20",
-		"10000000", "")
+		"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "SOL-Solana",
+		"3500000", "")
+
+	//res, err := PostWithdraw(tradeId,
+	//	"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "USDC-Solana",
+	//	"2000000", "")
+
+	//res, err := PostWithdraw(tradeId,
+	//	"TDwUgqkqJ8BTnDUwx9fWQPLteUXftexr2t", "TRX-TRON",
+	//	"10000", "")
 
 	if nil != err {
 		t.Fatal(err)
