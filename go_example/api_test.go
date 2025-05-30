@@ -36,9 +36,9 @@ func TestPostCreateAddress(t *testing.T) {
 	netWork = "Ethereum"
 	netWork = "Nano"
 	netWork = "Ravencoin"
-	netWork = "Dogecoin"
-	netWork = "Litecoin"
-	netWork = "Solana"
+	//netWork = "Dogecoin"
+	//netWork = "Litecoin"
+	//netWork = "Solana"
 
 	address, err := PostCreateAddress(netWork, "http://92.118.228.90:19900")
 	if nil != err {
@@ -115,6 +115,45 @@ func TestGetTrade(t *testing.T) {
 	t.Log(trade)
 }
 
+func TestPostWithdrawRVN(t *testing.T) {
+	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
+		t.Fatal(e)
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(3)
+	addr := []string{"RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a", "RFKKNiPGGxBb4dt8ghY8RG6ygyM45YJjoE", "RJEbayw2FGvTBFQRGdqMPcyGDhAhKVrYNU"}
+	//amount := []string{"180577500", "120695000", "133777500"}
+	amount := []string{"17500", "120695000", "133777500"}
+
+	//20695000
+	//89577500
+	//33777500
+
+	for i := 0; i < len(addr); i++ {
+		go func() {
+			defer func() {
+				if e := recover(); nil != e {
+
+				}
+				wg.Done()
+			}()
+			tradeId := util.GetInstanceByRandomUtil().RandCharacterString(32)
+			t.Log(tradeId)
+			// rvn RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a
+			res, err := PostWithdraw(tradeId,
+				addr[i], "RVN-Ravencoin",
+				amount[i], "")
+			t.Log(res)
+			t.Log(err)
+		}()
+
+	}
+	wg.Wait()
+	t.Log("finish")
+
+}
+
 func TestPostWithdraw(t *testing.T) {
 	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
 		t.Fatal(e)
@@ -122,10 +161,10 @@ func TestPostWithdraw(t *testing.T) {
 
 	tradeId := util.GetInstanceByRandomUtil().RandCharacterString(32)
 	t.Log(tradeId)
-	// rvn
-	//res, err := PostWithdraw(tradeId,
-	//	"RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a", "RVN-Ravencoin",
-	//	"100000000", "")
+	// rvn RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a
+	res, err := PostWithdraw(tradeId,
+		"RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a", "RVN-Ravencoin",
+		"1010000", "")
 
 	//res, err := PostWithdraw(tradeId,
 	//	"nano_1nk7kf11j4uhwqmry818xxhxqq9ickwrmm3xtwpzzp3ybjz75yuoeuc7chz8", "XNO-Nano",
@@ -139,9 +178,9 @@ func TestPostWithdraw(t *testing.T) {
 	//	"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "SOL-Solana",
 	//	"10000", "") // code=2014,tip=最小转账金额 3500000
 
-	res, err := PostWithdraw(tradeId,
-		"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "SOL-Solana",
-		"3500000", "")
+	//res, err := PostWithdraw(tradeId,
+	//	"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "SOL-Solana",
+	//	"3500000", "")
 
 	//res, err := PostWithdraw(tradeId,
 	//	"2eRJS1WHDEZjFK4333moyMW8H2d3k9D3k8ZaSsCnnAh1", "USDC-Solana",
