@@ -36,8 +36,8 @@ func TestPostCreateAddress(t *testing.T) {
 	netWork = "Ethereum"
 	netWork = "Nano"
 	netWork = "Ravencoin"
-	//netWork = "Dogecoin"
-	//netWork = "Litecoin"
+	netWork = "Dogecoin"
+	netWork = "Litecoin"
 	//netWork = "Solana"
 
 	address, err := PostCreateAddress(netWork, "http://92.118.228.90:19900")
@@ -115,6 +115,76 @@ func TestGetTrade(t *testing.T) {
 	t.Log(trade)
 }
 
+func TestPostWithdrawLTC(t *testing.T) {
+	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
+		t.Fatal(e)
+	}
+
+	wg := sync.WaitGroup{}
+	addr := []string{"ltc1q4jamujuysk7mxm3qpzl387qghktcx07vmnklfz"}
+	amount := []string{"19330"}
+	wg.Add(len(addr))
+
+	for i := 0; i < len(addr); i++ {
+		go func() {
+			defer func() {
+				if e := recover(); nil != e {
+
+				}
+				wg.Done()
+			}()
+			tradeId := util.GetInstanceByRandomUtil().RandCharacterString(32)
+			t.Log(tradeId)
+			// rvn RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a
+			res, err := PostWithdraw(tradeId,
+				addr[i], "LTC-Litecoin",
+				amount[i], "")
+			t.Log(res)
+			t.Log(err)
+		}()
+
+	}
+	wg.Wait()
+	t.Log("finish")
+}
+
+func TestPostWithdrawDoge(t *testing.T) {
+	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
+		t.Fatal(e)
+	}
+
+	wg := sync.WaitGroup{}
+	//addr := []string{"DTKjLFcLAHpH1UzB6k3tbq89UusqnnA2vR", "DRoxxxUPVTeC2dvmM1VA7nDEqiMhkkwfYJ"}
+	//amount := []string{"66085001", "2000900"}
+
+	addr := []string{"DTKjLFcLAHpH1UzB6k3tbq89UusqnnA2vR"}
+	amount := []string{"21706100"}
+
+	wg.Add(len(addr))
+
+	for i := 0; i < len(addr); i++ {
+		go func() {
+			defer func() {
+				if e := recover(); nil != e {
+
+				}
+				wg.Done()
+			}()
+			tradeId := util.GetInstanceByRandomUtil().RandCharacterString(32)
+			t.Log(tradeId)
+			// rvn RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a
+			res, err := PostWithdraw(tradeId,
+				addr[i], "DOGE-Dogecoin",
+				amount[i], "")
+			t.Log(res)
+			t.Log(err)
+		}()
+
+	}
+	wg.Wait()
+	t.Log("finish")
+}
+
 func TestPostWithdrawRVN(t *testing.T) {
 	if e := Init(priKeyG, priBaseUrlG, merchantCodeG, platformPubKeyG); nil != e {
 		t.Fatal(e)
@@ -124,7 +194,7 @@ func TestPostWithdrawRVN(t *testing.T) {
 	wg.Add(3)
 	addr := []string{"RPVW6ifbuCr4BQqAAjZ4APaT3sqL61tU8a", "RFKKNiPGGxBb4dt8ghY8RG6ygyM45YJjoE", "RJEbayw2FGvTBFQRGdqMPcyGDhAhKVrYNU"}
 	//amount := []string{"180577500", "120695000", "133777500"}
-	amount := []string{"17500", "120695000", "133777500"}
+	amount := []string{"5157500", "5500", "6157500"}
 
 	//20695000
 	//89577500
